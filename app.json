@@ -1,0 +1,15 @@
+{
+  "name": "App Manager",
+  "title": "App Manager",
+  "url": "index.html",
+  "icon": "icon.png",
+  "multipleWindows": false,
+  "bowerDependencies": {
+    "jquery": "latest"
+  },
+  "npmDependencies": {
+    "request": "*",
+    "yauzl": "*",
+    "mkdirp": "*"
+  }
+}
