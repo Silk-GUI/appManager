@@ -2,11 +2,10 @@
 
 <head>
   <title>App Manager</title>
+  <link href="/bc/materialize/bin/materialize.css" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
-      margin-top: 80px;
-      margin-bottom: 60px;
+      margin-bottom: 100px;
     }
     button {
       font-size: 16px;
@@ -17,6 +16,9 @@
       background-color: purple;
       border: none;
       cursor: pointer;
+    }
+    h3, .btn-flat {
+      margin-left: 50px;
     }
     #manager h2 {
       font-weight: 300;
@@ -30,107 +32,97 @@
       padding: 15px;
       box-sizing: border-box;
     }
-    #manager li {
+    #manager ul {
+      margin-left: 50px;
+    }
+    #manager li, #installer {
       list-style: none;
-      padding: 15px;
-      margin-bottom: 5px;
-      background-color: #cc90f2;
+      margin-bottom: 12px;
+      background-color: #eeeeee;
       width: 300px;
       position: relative;
+      height: 50px;
+      box-sizing: border-box;
+    }
+    #manager li span, #installer p {
+      vertical-align: middle;
+      padding-left: 10px;
+    }
+    #manager li img {
+      vertical-align: middle;
+      max-height: 40px;
+      max-width: 40px;
+      margin-top: 5px;
+      margin-left: 5px;
     }
     #manager li button {
+      opacity: 0;
       position: absolute;
       right: 0px;
       top: 0px;
       box-sizing: border-box;
-      height: 48px;
+      height: 50px;
+      width: 30px;
       border: 0px;
-      background-color: #800080;
+      background-color: #c62828;
       color: #FFF;
       font-size: 16px;
-    }
-    #install {
-      position: fixed;
-      bottom: 0px;
-      left: 0px;
-      width: 100%;
-      margin-bottom: 0px;
-      background-color: purple;
-      height: 40px;
-    }
-    #install input[type="text"] {
-      box-sizing: border-box;
-      width: 100%;
-      padding-right: 80px;
-      height: 40px;
-      font-size: 16px;
-      padding: 10px;
-      border: 2px solid #800080;
-    }
-    #install input[type="submit"] {
-      position: fixed;
-      right: 0px;
-      bottom: 0px;
-      height: 40px;
-      box-sizing: border-box;
-      display: block;
-      padding: 10px;
-      background-color: #800080;
-      border: 0px;
-      color: #FFF;
-      font-size: 16px;
-      width: 80px;
-      cursor: pointer;
-    }
-    #install input[type="submit"]:hover {
-      background-color: #a71ba7;
-    }
-    #install input[type="text"]:focus {
-      outline: none;
-    }
-    #status {
-      position: fixed;
-      bottom: 40px;
-      left: 0px;
-      width: 100%;
-      box-sizing: border-box;
-      height: 40px;
-      padding-top: 12px;
-      font-size: 16px;
-      background-color: rgba(255, 255, 255, 0.5);
       text-align: center;
+      -webkit-transition: .3s all;
+      transition: .15s all;
     }
-    #status .app {
-      color: green;
+    #manager li:hover button {
+      opacity: 1;
+    }
+    #installer {
+      display: none;
+      margin-left: 50px;
+    }
+    #installer p {
+      margin: 5px;
+      line-height: 1;
     }
   </style>
 </head>
 
 <body>
-  <div id="manager">
-    <h2>Your Apps</h2>
+  <div id="manager"> 
+    <h3>My Apps</h3> 
     <ul>
-      <li v-repeat="apps"><span>{{name}}</span> 
+      <li v-repeat="apps"><img src="{{icon}}"><span>{{name}}</span> 
         <button v-on="click : remove(this)">&times;</button>
       </li>
-    </ul>
+    </ul>    
   </div>
+  <div id="installer">
+    <p></p>
+    <div id="status"></div>
+  </div>
+  <a id="add" class="btn-flat light-green darken-1 modal-trigger" href="#install-modal">Install</a>
   <button id="reload">Reload</button>
-  <form id="install">
-    <input type="text" placeholder="Github-user-name/repository">
-    <input type="submit" value="Install">
-  </form>
-  <div id="status"><span class="progress"></span>  <span class="app"></span>
+  <div id="install-modal" class="modal">
+    <div class="modal-content">
+      <h4>Install</h4>
+      <p><div class="input-field col s6">
+          <input placeholder="Github User/Repo or path to local app" id="first_name" type="text" class="validate">
+          <label for="first_name">App</label>
+        </div></p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="next modal-action modal-close waves-effect waves-green btn-flat">Next</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+    </div>
   </div>
-
   <script src="/bc/vue"></script>
   <script src="/bc/jquery"></script>
+  <script src="/bc/materialize/bin/materialize.js"></script>
   <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
   <script src="/api.js"></script>
   <script src="/js/call.js"></script>
   <script>
     var apps = [],
       manager;
+
     $("body").ready(function () {
       manager = new Vue({
         el: "#manager",
@@ -139,6 +131,7 @@
         },
         methods: {
           remove: function (app) {
+            // don't uninstall included apps
             var silkApps = ["fileExplorer", "terminal", "textEditor", "tunnelclient", "appManager", "app-defualts"];
             if (silkApps.indexOf(app.folder) === -1) {
 
@@ -174,51 +167,61 @@
           }
         }
       });
+      // this should update when the app list changes
       methods.listen("apps/list", {}, function (error, data) {
         if (error) {
           alert(error);
         }
         var newData = {
           apps: data
-        }
+        };
         manager.$data = newData;
 
       });
-    });
 
+    
     $("#reload").click(function () {
       location.reload();
     });
 
-    $("#install").submit(function (e) {
-      e.preventDefault();
-
-      var url = $("#install input[type='text']").val().trim();
-      $("#install input[type='text]").val("");
-      $("#status").css("display", "block");
-
-      $("#status .app").text(url.split("/")[1]);
-      methods.listen("apps/install", {
-        "url": url
-      }, function (err, message) {
-        if (err) {
-          alert(err);
-          $("#status").css("display", "none");
-          $("#status .progress").text("");
-          return;
-        }
-        $("#status .progress").text(message);
-        if (message === " ") {
-          $("#status .progress").text("Installed ");
-          setTimeout(function () {
-            $("#status").css("display", "none");
-            location.reload();
-          }, 500)
-        }
-
-
-      })
+    $('#add').leanModal({
+      dismissible: false,
+      complete: function () {
+        // the click handler gets removed when the modal closes
+        $('#install-modal .next').click(install);
+      }
     });
+    function install() {
+      if(installing === true) {
+        return alert('An app is currently being installed. \n Please wait until it is done.');
+      } 
+      var path = $('#install-modal input').val().trim();
+      $('#install-modal input').val('');
+
+      console.log('app name ', path);
+      if(path.indexOf('/') === 0) {
+        return //alert('is local path');
+
+      } else {
+        $('#installer').css('display', 'block');
+        $('#installer p').text(path);
+        // alert('is github url');
+        methods.listen("apps/install", {url: path}, function (err, data) {
+          if(err) {
+            alert(err);
+            return location.reload();
+          }
+          if(data === " ") {
+            alert('finished installing app');
+            return location.reload();
+          } else {
+            $("#status").text(data);
+          }
+        });
+      }
+    }
+    });
+    $('#install-modal .next').click(install); 
   </script>
 </body>
 
