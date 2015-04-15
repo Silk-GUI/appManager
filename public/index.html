@@ -132,38 +132,35 @@
         methods: {
           remove: function (app) {
             // don't uninstall included apps
-            var silkApps = ["fileExplorer", "terminal", "textEditor", "tunnelclient", "appManager", "app-defualts"];
-            if (silkApps.indexOf(app.folder) === -1) {
+            var answer = confirm('This app is included with Silk GUI \n Are you sure you want to remove it?');
+            if(answer === false) {
+             return;
+          }
+           methods.listen("apps/remove", {
+             folder: app.folder,
+             name: app.title
+           }, function (err, message) {
+             if (err) {
+               alert(err);
+               $("#status").css("display", "none");
+               $("#status .progress").text("");
+               return;
+             }
 
-              $("#status .app").text(app.name);
-              $("#status").css("display", "block");
+             $("#status .progress").text(message);
 
+             if (message === " ") {
+               $("#status .progress").text("Removed");
+               setTimeout(function () {
+                 $("#status").css("display", "none");
+                 location.reload();
+               }, 500);
+             }
 
-              methods.listen("apps/remove", {
-                folder: app.name,
-                name: app.title
-              }, function (err, message) {
-                if (err) {
-                  alert(err);
-                  $("#status").css("display", "none");
-                  $("#status .progress").text("");
-                  return;
-                }
+           });
 
-                $("#status .progress").text(message);
-
-                if (message === " ") {
-                  $("#status .progress").text("Removed");
-                  setTimeout(function () {
-                    $("#status").css("display", "none");
-                    location.reload();
-                  }, 500);
-                }
-
-              });
-
-              console.dir(app);
-            }
+           console.dir(app);
+            
           }
         }
       });
