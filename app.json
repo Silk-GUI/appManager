@@ -11,6 +11,7 @@
   "npmDependencies": {
     "request": "*",
     "yauzl": "*",
-    "mkdirp": "*"
+    "mkdirp": "*",
+    "async": "*"
   }
 }
