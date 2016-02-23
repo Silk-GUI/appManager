@@ -42,11 +42,28 @@ methods.add({
       send(void(0), data);
     });
   },
-  "apps/install": download
+  "apps/install": startInstall
 });
+function startInstall(data, call_obj, send) {
+  var path = data.url;
+  // check if path is local or a github repository
+  var localPath = false;
+  if(path.indexOf('/') === 0) {
+    localPath = true;
+  } else if(path.indexOf('~/') === 0) {
+    localPath = true;
+  }
+  if(localPath === false) {
+    download(data, call_obj, send);
+  } else {
+    console.log('adding external app');
+    Silk.api.call('apps/external/add', data.url, function (err, result) {
+      console.log('added external app', err, result);
+    });
+  }
+}
 
 function download(data, call_ob, send) {
-
   fs.exists(appsFolder + path.sep + data.url.replace("/", "-"), function (exists) {
     if (exists === true) {
       send(new Error("App already exists"));
