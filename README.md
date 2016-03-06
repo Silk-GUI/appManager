@@ -5,14 +5,14 @@ App Manager helps you manage your apps.  It currently is very basic.
 Does now:
 
 1. Install apps from github.
-2. View list of installed apps
-3. Delete apps
+2. Allow you to add local apps
+3. View list of installed apps
+4. Delete apps
 
 Will do:
 
-1. Allow you to add local apps
-2. view available apps
-3. update apps
+1. view available apps
+2. update apps
 
 ### Contributing
 
