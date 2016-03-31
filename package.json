@@ -10,7 +10,9 @@
     "mkdirp": "*",
     "request": "*",
     "sockjs": "^0.3.16",
-    "yauzl": "*"
+    "yauzl": "*",
+    "bower_static": "*",
+    "silk-api": "*"
   },
   "repository": "https://github.com/Silk-GUI/appManager",
   "license": "BSD-3-Clause",
