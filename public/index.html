@@ -102,8 +102,8 @@
 <div id="manager">
   <h3>My Apps</h3>
   <ul>
-    <li v-repeat="apps"><img src="{{icon}}"><span>{{name}}</span>
-      <button v-on="click : remove(this)">&times;</button>
+    <li v-for="app in apps"><img src="{{app.icon}}"><span>{{app.name}}</span>
+      <button v-on="click : remove(app)">&times;</button>
     </li>
   </ul>
 </div>
@@ -128,11 +128,12 @@
     <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
   </div>
 </div>
+<script src="/eureca.js"></script>
 <script src="/bc/vue"></script>
 <script src="/bc/jquery"></script>
 <script src="/bc/materialize/bin/materialize.js"></script>
 <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
-<script src="/api.js"></script>
+<script src="http://localhost:3000/api.js"></script>
 <script src="/js/call.js"></script>
 <script>
   var apps = [],
@@ -180,7 +181,7 @@
       }
     });
     // this should update when the app list changes
-    ApplicationFork.pipe("apps/list", {}, function (error, data) {
+    methods.listen("apps/list", {}, function (error, data) {
       if(error) {
         alert(error);
       }
@@ -188,6 +189,7 @@
         apps: data
       };
       manager.$data = newData;
+      console.dir(data);
 
     });
 

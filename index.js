@@ -3,7 +3,46 @@ var fs = require('fs');
 var path = require('path');
 var yauzl = require("yauzl");
 var mkdirp = require('mkdirp');
+var path = require('path');
 var async = require('async');
+var Silk = require('silk-api');
+var http = require('http');
+var sockjs = require('sockjs');
+var express = require('express');
+var app = express();
+var server = http.createServer(app);
+var electronApp = require('app');
+var BrowserWindow = require('browser-window');
+var bowerStatic = require('bower_static');
+var Eureca = require('eureca.io');
+
+bowerStatic.changeAppRoot(__dirname);
+app.use('/bc', bowerStatic);
+app.use(express.static(path.join(__dirname, 'public')));
+
+//sock js
+var sockjs_opts = { sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js" };
+
+var sockjsServer = sockjs.createServer(sockjs_opts);
+sockjsServer.on('connection', function (conn) {
+  conn.on('data', function (message) {
+    conn.write(message);
+  });
+});
+
+sockjsServer.installHandlers(server, { prefix: '/ws' });
+
+var eurecaServer = new Eureca.Server({ transport: 'sockjs' });
+eurecaServer.attach(server);
+
+server.listen(2001, '0.0.0.0');
+
+electronApp.on('ready', function () {
+  var window = new BrowserWindow();
+  window.loadUrl('http://bing.com');
+});
+
+return;
 
 var methods = Silk.methods;
 var apps = [];
@@ -48,12 +87,12 @@ function startInstall(data, call_obj, send) {
   var path = data.url;
   // check if path is local or a github repository
   var localPath = false;
-  if(path.indexOf('/') === 0) {
+  if (path.indexOf('/') === 0) {
     localPath = true;
-  } else if(path.indexOf('~/') === 0) {
+  } else if (path.indexOf('~/') === 0) {
     localPath = true;
   }
-  if(localPath === false) {
+  if (localPath === false) {
     download(data, call_obj, send);
   } else {
     console.log('adding external app');
@@ -84,7 +123,8 @@ function download(data, call_ob, send) {
     };
 
     send(void(0), "Downloading...");
-    request(options).on('response', function (response) {}).on('error', function (err) {
+    request(options).on('response', function (response) {
+    }).on('error', function (err) {
       send(err)
     }).on("end", function () {
       send(void(0), "pending");
@@ -134,8 +174,8 @@ function install(data, call_ob, send) {
         entry.fileName = fileName;
         var dest = path.join(extractTo, entry.fileName)
         var destDir = path.dirname(dest)
-          // dest = dest.split(path.sep);
-          // dest = dest.slice(0, dest.length - 1);
+        // dest = dest.split(path.sep);
+        // dest = dest.slice(0, dest.length - 1);
 
         zipfile.openReadStream(entry, function (err, readStream) {
           if (err) {
@@ -147,7 +187,6 @@ function install(data, call_ob, send) {
             if (err) {
               send(err);
             }
-
 
             //entry.fileName = data.url.replace("/", "-");
             // ensure parent directory exists, and then:

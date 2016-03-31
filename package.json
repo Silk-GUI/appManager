@@ -1,0 +1,21 @@
+{
+  "name": "appManager",
+  "productName": "App Manager 2",
+  "version": "0.0.1",
+  "description": "App manager for Silk GUI",
+  "dependencies": {
+    "async": "*",
+    "eureca.io": "^0.6.42",
+    "express": "^4.13.4",
+    "mkdirp": "*",
+    "request": "*",
+    "sockjs": "^0.3.16",
+    "yauzl": "*"
+  },
+  "repository": "https://github.com/Silk-GUI/appManager",
+  "license": "BSD-3-Clause",
+  "icon": "public/icon.png",
+  "silk": {
+    "url": "http://localhost:2001"
+  }
+}
