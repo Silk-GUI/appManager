@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -102,7 +101,7 @@
 <div id="manager">
   <h3>My Apps</h3>
   <ul>
-    <li v-for="app in apps"><img src="{{app.icon}}"><span>{{app.name}}</span>
+    <li v-for="app in apps"><img :src="app.icon"><span>{{app.name}}</span>
       <button v-on="click : remove(app)">&times;</button>
     </li>
   </ul>
@@ -132,12 +131,11 @@
 <script src="/bc/vue"></script>
 <script src="/bc/jquery"></script>
 <script src="/bc/materialize/bin/materialize.js"></script>
-<script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
-<script src="http://localhost:3000/api.js"></script>
-<script src="/js/call.js"></script>
 <script>
   var apps = [],
     manager;
+
+  var eurecaClient = new Eureca.Client({ transport: 'sockjs' });
 
   $("body").ready(function () {
     manager = new Vue({
@@ -149,14 +147,14 @@
         remove: function (app) {
           // don't uninstall included apps
           var answer = confirm('This app is included with Silk GUI \n Are you sure you want to remove it?');
-          if(answer === false) {
+          if (answer === false) {
             return;
           }
           methods.listen("apps/remove", {
             folder: app.folder,
             name: app.title
           }, function (err, message) {
-            if(err) {
+            if (err) {
               alert(err);
               $("#status").css("display", "none");
               $("#status .progress").text("");
@@ -165,7 +163,7 @@
 
             $("#status .progress").text(message);
 
-            if(message === " ") {
+            if (message === " ") {
               $("#status .progress").text("Removed");
               setTimeout(function () {
                 $("#status").css("display", "none");
@@ -180,19 +178,24 @@
         }
       }
     });
-    // this should update when the app list changes
-    methods.listen("apps/list", {}, function (error, data) {
-      if(error) {
-        alert(error);
-      }
-      var newData = {
-        apps: data
-      };
-      manager.$data = newData;
-      console.dir(data);
 
+    eurecaClient.ready(function (serverProxy) {
+      serverProxy.list().onReady(function (data) {
+        console.log("ready");
+        var newData = {
+          apps: data
+        };
+
+        data.forEach(function (app) {
+          if(app.icon.indexOf('/icon/') === 0) {
+            app.icon = "//localhost:3000" + app.icon;
+          }
+        });
+
+        manager.$data = newData;
+        console.dir(data);
+      });
     });
-
 
     $("#reload").click(function () {
       location.reload();
@@ -213,12 +216,12 @@
       $('#installer').css('display', 'block');
       $('#installer p').text(path);
       // alert('is github url');
-      methods.listen("apps/install", {url: path}, function (err, data) {
-        if(err) {
+      methods.listen("apps/install", { url: path }, function (err, data) {
+        if (err) {
           alert(err);
           return location.reload();
         }
-        if(data === " ") {
+        if (data === " ") {
           alert('finished installing app');
           return location.reload();
         } else {
@@ -226,7 +229,6 @@
         }
       });
     }
-
 
     $('#install-modal .next').click(install);
   });
