@@ -132,8 +132,9 @@
 <script src="/bc/jquery"></script>
 <script src="/bc/materialize/bin/materialize.js"></script>
 <script>
-  var apps = [],
-    manager;
+  var apps = [];
+  var manager;
+  var server;
 
   var eurecaClient = new Eureca.Client({ transport: 'sockjs' });
 
@@ -150,10 +151,10 @@
           if (answer === false) {
             return;
           }
-          methods.listen("apps/remove", {
+          server("apps/remove", {
             folder: app.folder,
             name: app.title
-          }, function (err, message) {
+          }).onReady(function (err, message) {
             if (err) {
               alert(err);
               $("#status").css("display", "none");
@@ -180,6 +181,8 @@
     });
 
     eurecaClient.ready(function (serverProxy) {
+      server = serverProxy;
+
       serverProxy.list().onReady(function (data) {
         console.log("ready");
         var newData = {
@@ -187,7 +190,7 @@
         };
 
         data.forEach(function (app) {
-          if(app.icon.indexOf('/icon/') === 0) {
+          if (app.icon.indexOf('/icon/') === 0) {
             app.icon = "//localhost:3000" + app.icon;
           }
         });

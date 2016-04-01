@@ -7,7 +7,7 @@ appsFolder = appsFolder.slice(0, appsFolder.length - 1);
 appsFolder = appsFolder.join(path.sep);
 
 module.exports = {
-  "apps/remove": function (data, call_obj, send) {
+  "apps/remove": function (data) {
     send(void(0), "Deleting...");
 
     var file = data.folder;
@@ -45,7 +45,7 @@ module.exports = {
   "apps/install": startInstall
 };
 
-function startInstall(data, call_obj, send) {
+function startInstall(data) {
   var path = data.url;
   // check if path is local or a github repository
   var localPath = false;
