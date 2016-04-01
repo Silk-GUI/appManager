@@ -1,6 +1,6 @@
 {
   "name": "appManager",
-  "productName": "App Manager 2",
+  "productName": "App Manager",
   "version": "0.0.1",
   "description": "App manager for Silk GUI",
   "dependencies": {
