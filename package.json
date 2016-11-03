@@ -15,7 +15,6 @@
     "silk-api": "*"
   },
   "scripts": {
-    "install": "bower install"
   },
   "repository": "https://github.com/Silk-GUI/appManager",
   "license": "BSD-3-Clause",
