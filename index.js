@@ -13,12 +13,9 @@ var app = express();
 var server = http.createServer(app);
 var electronApp = require('app');
 var BrowserWindow = require('browser-window');
-var bowerStatic = require('bower_static');
 var Eureca = require('eureca.io');
 var exports = require('./exports.js');
 
-bowerStatic.changeAppRoot(__dirname);
-app.use('/bc', bowerStatic);
 app.use(express.static(path.join(__dirname, 'public')));
 
 var eurecaServer = new Eureca.Server({ transport: 'sockjs' });

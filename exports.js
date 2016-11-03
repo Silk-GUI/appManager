@@ -1,5 +1,4 @@
 var Silk = require('silk-api');
-console.dir(Silk);
 var path = require('path');
 var apps = [];
 var appsFolder = __dirname.split(path.sep);
@@ -23,7 +22,6 @@ module.exports = {
           }
         });
         fs.rmdirSync(path);
-        console.log("Finished removing " + file);
         send(void(0), " ");
       }
     };
@@ -32,13 +30,10 @@ module.exports = {
   "list": function () {
     var context = this;
     context.async = true;
-    console.log("called list");
     Silk.call('apps/list', {}, function (err, data) {
-      console.log("received list");
       if (err) {
         return context.return(err);
       }
-      console.log(data);
       context.return(data);
     });
   },
@@ -57,7 +52,6 @@ function startInstall(data) {
   if (localPath === false) {
     download(data, call_obj, send);
   } else {
-    console.log('adding external app');
     Silk.call('apps/external/add', data.url, function (err, result) {
       console.log('added external app', err, result);
     });

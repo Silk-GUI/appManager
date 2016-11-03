@@ -1,7 +1,7 @@
 {
   "name": "appManager",
   "productName": "App Manager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "App manager for Silk GUI",
   "dependencies": {
     "async": "*",
@@ -11,7 +11,6 @@
     "request": "*",
     "sockjs": "^0.3.16",
     "yauzl": "*",
-    "bower_static": "*",
     "silk-api": "*"
   },
   "scripts": {
